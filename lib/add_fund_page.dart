@@ -1,3 +1,5 @@
+import 'package:electricity_bill_calculator/add_fund_bill.dart';
+import 'package:electricity_bill_calculator/constants.dart';
 import 'package:electricity_bill_calculator/home_page.dart';
 import 'package:electricity_bill_calculator/main.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,11 @@ class AddFundPage extends StatefulWidget {
 }
 
 class _AddFundPageState extends State<AddFundPage> {
-  final TextEditingController textEditingController = TextEditingController();
+  final TextEditingController addFundAmountInputController =
+      TextEditingController();
+  final TextEditingController bankAccountInputController =
+      TextEditingController();
+  String? selectedBank;
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +24,23 @@ class _AddFundPageState extends State<AddFundPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.red,
-        title: Text("Nap tien vao tai khoan"),
+        title: const Text("Nap tien vao tai khoan"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: SafeArea(
           child: Column(
             children: [
               _buildFundInfo(),
-              SizedBox(
+              const SizedBox(
+                height: 16,
+              ),
+              _buildDropdownMenu(),
+              const SizedBox(
+                height: 16,
+              ),
+              _buildBankAccountNumberInput(),
+              const SizedBox(
                 height: 16,
               ),
               _buildAddFundTextField(),
@@ -38,16 +52,39 @@ class _AddFundPageState extends State<AddFundPage> {
     );
   }
 
+  Widget _buildDropdownMenu() {
+    return DropdownButton(
+      isExpanded: true,
+      value: selectedBank,
+      hint: const Text("Chon ngan hang"),
+      items: AppConstants.bankNames
+          .map((e) => _buildDropdownMenuItem(bankName: e))
+          .toList(),
+      onChanged: (value) {
+        setState(() {
+          selectedBank = value;
+        });
+      },
+    );
+  }
+
+  DropdownMenuItem _buildDropdownMenuItem({required String bankName}) {
+    return DropdownMenuItem(
+      value: bankName,
+      child: Text(bankName),
+    );
+  }
+
   Widget _buildFundInfo() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        const Text(
           "So du: ",
         ),
         Text(
           "${currentFund}d",
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ],
@@ -60,46 +97,64 @@ class _AddFundPageState extends State<AddFundPage> {
         border: OutlineInputBorder(),
         hintText: "Nhap so tien muon nap",
       ),
-      controller: textEditingController,
-      keyboardType: TextInputType.number,
+      controller: addFundAmountInputController,
+
+      /// Thay doi kieu ban phim o day
+      keyboardType: TextInputType.text,
+    );
+  }
+
+  Widget _buildBankAccountNumberInput() {
+    return Visibility(
+      visible: selectedBank != null,
+      child: TextFormField(
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          hintText: "Nhap so tai khoan",
+        ),
+        controller: bankAccountInputController,
+      ),
     );
   }
 
   Widget _buildAddFundButton() {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: ElevatedButton(
         onPressed: _validateForm,
-        child: Text("Nap tien"),
+        child: const Text("Nap tien"),
       ),
     );
   }
 
   void _validateForm() {
-    if (textEditingController.text.trim().isEmpty) {
+    if (selectedBank == null) {
+      _showErrorDialog("Ban chua chon ngan hang");
+      return;
+    }
+
+    if (bankAccountInputController.text.trim().isEmpty) {
+      _showErrorDialog("Ban chua nhap so tai khoan");
+      return;
+    }
+
+    if (addFundAmountInputController.text.trim().isEmpty) {
       _showErrorDialog("So tien khong duoc de trong");
       return;
     }
 
-    if (double.tryParse(textEditingController.text.trim()) == null) {
+    if (double.tryParse(addFundAmountInputController.text.trim()) == null ||
+        double.tryParse(addFundAmountInputController.text.trim())! <= 0) {
       _showErrorDialog("So tien khong hop le");
       return;
     }
-    _addFund();
+
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) =>  AddFundBillPage(amount: int.parse(addFundAmountInputController.text), bankName: selectedBank!),
+    ));
   }
 
-  void _addFund() {
-    currentFund += num.parse(textEditingController.text.trim());
-    _backToHomeScreen();
-  }
 
-  void _backToHomeScreen() {
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-        (route) => false);
-  }
 
   void _showErrorDialog(String errorMessage) {
     showDialog(

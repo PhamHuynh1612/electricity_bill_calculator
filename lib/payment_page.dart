@@ -2,6 +2,7 @@ import 'package:electricity_bill_calculator/constants.dart';
 import 'package:electricity_bill_calculator/home_page.dart';
 import 'package:electricity_bill_calculator/main.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class PaymentPage extends StatelessWidget {
   const PaymentPage({Key? key, required this.customerId}) : super(key: key);
@@ -64,10 +65,12 @@ class PaymentPage extends StatelessWidget {
     }
     _doTransaction();
     _backToHomeScreen(context);
+    Fluttertoast.showToast(msg: "Giao dich thanh cong!");
   }
 
   void _doTransaction() {
     currentFund -= (AppConstants.paymentFee + AppConstants.paymentAmount);
+    updateFund();
   }
 
   void _backToHomeScreen(BuildContext context) {
@@ -101,7 +104,7 @@ class PaymentPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const Text(
-              "Viettel Pay",
+              "ABC Pay",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(
@@ -143,11 +146,11 @@ class PaymentPage extends StatelessWidget {
         const SizedBox(
           height: 8,
         ),
-        _buildBillInfoRow("So tien giao dich", "20.000"),
+        _buildBillInfoRow("So tien giao dich", "${AppConstants.paymentAmount}d"),
         const SizedBox(
           height: 8,
         ),
-        _buildBillInfoRow("Phi giao dich", "Mien phi"),
+        _buildBillInfoRow("Phi giao dich",  "${AppConstants.paymentFee}d"),
       ],
     );
   }

@@ -1,9 +1,8 @@
 import 'package:electricity_bill_calculator/add_fund_page.dart';
+import 'package:electricity_bill_calculator/constants.dart';
 import 'package:electricity_bill_calculator/electricity_bill_page.dart';
 import 'package:electricity_bill_calculator/main.dart';
 import 'package:flutter/material.dart';
-
-
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +12,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
+          shrinkWrap: true,
           children: [
             const SizedBox(
               height: 16,
@@ -23,7 +23,6 @@ class HomePage extends StatelessWidget {
             ),
             _buildFunctionalButtons(context),
           ],
-          shrinkWrap: true,
         ),
       ),
     );
@@ -37,7 +36,7 @@ class HomePage extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.person,
                 color: Colors.black,
                 size: 64,
@@ -46,8 +45,8 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text("Name"),
-                  SizedBox(
+                  const Text(AppConstants.customerId),
+                  const SizedBox(
                     height: 8,
                   ),
                   Text("So du: ${currentFund}d")
@@ -58,10 +57,10 @@ class HomePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => AddFundPage(),
+                builder: (context) => const AddFundPage(),
               ));
             },
-            child: Text("Nap tien"),
+            child: const Text("Nap tien"),
           ),
         ],
       ),
